@@ -1,8 +1,23 @@
+buildscript {
+    repositories {
+        google()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:+"  // Fetches the latest stable version
+
+
+    }
+}
+
+
 allprojects {
+
     repositories {
         google()
         mavenCentral()
     }
+
 }
 
 rootProject.buildDir = "../build"
