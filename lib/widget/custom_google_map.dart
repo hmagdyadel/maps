@@ -12,7 +12,7 @@ class GoogleMapView extends StatefulWidget {
 
 class _GoogleMapViewState extends State<GoogleMapView> {
   late CameraPosition initialCameraPosition;
-  GoogleMapController? googleMapController;
+  late GoogleMapController googleMapController;
   Set<Marker> markers = {};
   late LocationService locationService;
   bool isFirstCall = true;
@@ -23,7 +23,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
       target: LatLng(0, 0),
     );
     locationService = LocationService();
-    updateMyLocation();
+
     super.initState();
   }
 
@@ -32,31 +32,67 @@ class _GoogleMapViewState extends State<GoogleMapView> {
     return GoogleMap(
       zoomControlsEnabled: false,
       initialCameraPosition: initialCameraPosition,
+      markers: markers,
+      onMapCreated: (controller) {
+        googleMapController = controller;
+        updateCurrentLocation();
+      },
     );
-  }
-// stream data
-  void getLocationData() {
-    LocationSettings locationSettings = const LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 2,
-    );
-    Geolocator.getPositionStream(locationSettings: locationSettings)
-        .listen((Position? position) {
-      setMyLocationCamera(position);
-      setMyLocationMarker(position!);
-    });
   }
 
-  void setMyLocationCamera(Position? position) {
-    if (isFirstCall) {
-      CameraPosition cameraPosition = CameraPosition(
-          target: LatLng(position!.latitude, position.longitude), zoom: 17);
-      googleMapController
-          ?.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-      isFirstCall = false;
-    } else {
-      googleMapController?.animateCamera(CameraUpdate.newLatLng(
-          LatLng(position!.latitude, position.longitude)));
+// stream data
+//   void getLocationData() {
+//     LocationSettings locationSettings = const LocationSettings(
+//       accuracy: LocationAccuracy.high,
+//       distanceFilter: 2,
+//     );
+//     Geolocator.getPositionStream(locationSettings: locationSettings)
+//         .listen((Position? position) {
+//       setMyLocationCamera(position);
+//       setMyLocationMarker(position!);
+//     });
+//   }
+
+  // void setMyLocationCamera(Position? position) {
+  //   if (isFirstCall) {
+  //     CameraPosition cameraPosition = CameraPosition(
+  //         target: LatLng(position!.latitude, position.longitude), zoom: 17);
+  //     googleMapController
+  //         ?.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+  //     isFirstCall = false;
+  //   } else {
+  //     googleMapController.animateCamera(CameraUpdate.newLatLng(
+  //         LatLng(position!.latitude, position.longitude)));
+  //   }
+  // }
+
+  // void updateMyLocation() async {
+  //   await locationService.checkAndRequestLocationService();
+  //   getLocationData();
+  // }
+
+  void updateCurrentLocation() async {
+    try {
+      var locationData = await locationService.getLocation();
+      LatLng currentPosition =
+          LatLng(locationData.latitude, locationData.longitude);
+      CameraPosition myCurrentCameraPosition =
+          CameraPosition(target: currentPosition, zoom: 16);
+      Marker currentLocationMarker = Marker(
+        markerId: const MarkerId('myLocation'),
+        position: currentPosition,
+      );
+      googleMapController.animateCamera(
+        CameraUpdate.newCameraPosition(myCurrentCameraPosition),
+      );
+      markers.add(currentLocationMarker);
+      setState(() {});
+    // } on LocationServiceException catch (e) {
+    //   // TODO
+    // } on LocationPermissionException catch (e) {
+    //   // TODO
+    } catch (e) {
+      // TODO
     }
   }
 
@@ -67,11 +103,10 @@ class _GoogleMapViewState extends State<GoogleMapView> {
     markers.add(myLocationMarker);
     setState(() {});
   }
-
-  void updateMyLocation() async {
-    var hasPermission = await locationService.checkAndRequestLocationService();
-    if (hasPermission) {
-      getLocationData();
-    }
-  }
 }
+
+
+
+// text field =>   search for place
+// listen the entry of the text field
+// create route between my location and the place
