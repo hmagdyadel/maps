@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:maps/utils/google_maps_places_service.dart';
-import 'package:maps/utils/location_service.dart';
+import 'package:uuid/uuid.dart';
+
 
 import '../models/place_auto_complete_model/place_auto_complete_model.dart';
+import '../utils/google_maps_places_service.dart';
+import '../utils/location_service.dart';
 import 'custom_text_field.dart';
 import 'prediction_list_view.dart';
 
@@ -25,6 +27,8 @@ class _GoogleMapViewState extends State<GoogleMapView> {
   late GoogleMapsPlacesService googleMapsPlacesService;
   List<PlaceAutoCompleteModel> places = [];
 
+  late Uuid uuid;
+
   @override
   void initState() {
     initialCameraPosition = const CameraPosition(
@@ -34,6 +38,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
     googleMapsPlacesService = GoogleMapsPlacesService();
     textEditingController = TextEditingController();
     fetchPredictions();
+    uuid=const Uuid();
     super.initState();
   }
 
@@ -81,7 +86,15 @@ class _GoogleMapViewState extends State<GoogleMapView> {
                 textEditingController: textEditingController,
               ),
               const SizedBox(height: 10),
-              PredictionListView(places: places),
+              PredictionListView(
+                places: places,
+                googleMapsPlacesService: googleMapsPlacesService,
+                onPlaceSelect: (placeDetailsModel) {
+                  textEditingController.clear();
+                  places.clear();
+                  setState(() {});
+                },
+              ),
             ],
           ),
         ),

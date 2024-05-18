@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+
 import '../models/place_auto_complete_model/place_auto_complete_model.dart';
+import '../models/place_details_model/place_details_model.dart';
+import '../utils/google_maps_places_service.dart';
 
 class PredictionListView extends StatelessWidget {
   const PredictionListView({
     super.key,
     required this.places,
+    required this.googleMapsPlacesService,
+    required this.onPlaceSelect,
   });
 
   final List<PlaceAutoCompleteModel> places;
+  final GoogleMapsPlacesService googleMapsPlacesService;
+  final Function(PlaceDetailsModel) onPlaceSelect;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +32,12 @@ class PredictionListView extends StatelessWidget {
                 color: Colors.grey,
               ),
               trailing: IconButton(
-                onPressed: () {},
+                onPressed: () async {
+                  var placeDetails =
+                      await googleMapsPlacesService.getPlaceDetails(
+                          placeId: places[index].placeId.toString());
+                  onPlaceSelect(placeDetails);
+                },
                 icon: const Icon(FontAwesomeIcons.arrowRight),
               ),
             );
