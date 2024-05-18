@@ -87,10 +87,10 @@ class _GoogleMapViewState extends State<GoogleMapView> {
       );
       markers.add(currentLocationMarker);
       setState(() {});
-    // } on LocationServiceException catch (e) {
-    //   // TODO
-    // } on LocationPermissionException catch (e) {
-    //   // TODO
+      // } on LocationServiceException catch (e) {
+      //   // TODO
+      // } on LocationPermissionException catch (e) {
+      //   // TODO
     } catch (e) {
       // TODO
     }
@@ -105,8 +105,8 @@ class _GoogleMapViewState extends State<GoogleMapView> {
   }
 }
 
-
-
-// text field =>   search for place
+// text field
 // listen the entry of the text field
+// search place
+// display results
 // create route between my location and the place
