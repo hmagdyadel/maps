@@ -3,7 +3,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
-
 import '../models/place_auto_complete_model/place_auto_complete_model.dart';
 import '../utils/google_maps_places_service.dart';
 import '../utils/location_service.dart';
@@ -26,6 +25,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
   bool isFirstCall = true;
   late GoogleMapsPlacesService googleMapsPlacesService;
   List<PlaceAutoCompleteModel> places = [];
+  String? sessionToken;
 
   late Uuid uuid;
 
@@ -38,15 +38,18 @@ class _GoogleMapViewState extends State<GoogleMapView> {
     googleMapsPlacesService = GoogleMapsPlacesService();
     textEditingController = TextEditingController();
     fetchPredictions();
-    uuid=const Uuid();
+    uuid = const Uuid();
     super.initState();
   }
 
   void fetchPredictions() {
     textEditingController.addListener(() async {
+      sessionToken ??= uuid.v4();
       if (textEditingController.text.isNotEmpty) {
         var result = await googleMapsPlacesService.getPredictions(
-            input: textEditingController.text);
+          input: textEditingController.text,
+          sessionToken: sessionToken!,
+        );
         places.clear();
         places.addAll(result);
         setState(() {});
@@ -91,6 +94,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
                 googleMapsPlacesService: googleMapsPlacesService,
                 onPlaceSelect: (placeDetailsModel) {
                   textEditingController.clear();
+                  sessionToken = null;
                   places.clear();
                   setState(() {});
                 },

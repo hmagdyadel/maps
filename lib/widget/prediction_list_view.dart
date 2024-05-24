@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-
 import '../models/place_auto_complete_model/place_auto_complete_model.dart';
 import '../models/place_details_model/place_details_model.dart';
 import '../utils/google_maps_places_service.dart';

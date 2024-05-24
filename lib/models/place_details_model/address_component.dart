@@ -1,4 +1,3 @@
-
 class AddressComponent {
   String? longName;
   String? shortName;
